@@ -23,12 +23,8 @@ export default async function handler(
       },
     });
 
-    console.log("🚀 ~ response status:", response.status);
-    // Log headers
     const headers = response.headers;
-    headers.forEach((value, key) => {
-      console.log(`🚀 ~ Header ${key}: ${value}`);
-    });
+    headers.forEach((value, key) => {});
     if (!response.ok) {
       const erreorText = await response.text();
       throw new Error(`Falha ao listar vozes: ${erreorText}`);

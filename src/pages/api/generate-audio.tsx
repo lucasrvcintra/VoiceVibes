@@ -3,19 +3,20 @@ import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
 
-const CHUNK_SIZE = 1024;
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
     const apiKey = process.env.ELEVENLABS_API_KEY;
-    const voiceId = "FGY2WhTYpPnrIDTdsKH5"; // Substitua com seu voice-id
-    const textToSpeak = "<text>"; // Substitua com o texto desejado
+    const { voiceId, textToSpeak } = req.body;
 
     if (!apiKey) {
       throw new Error("Chave de API não encontrada");
+    }
+
+    if (!voiceId || !textToSpeak) {
+      throw new Error("Dados de requisição inválidos ou incompletos!");
     }
 
     const ttsUrl = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream`;
