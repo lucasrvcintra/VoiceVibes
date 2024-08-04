@@ -69,16 +69,16 @@ export default async function handler(
       throw new Error(`Falha ao salvar o áudio: ${err.message}`);
     });
 
-    // Adicione um listener para o evento 'close' para garantir que a resposta seja enviada se o streaming for interrompido
     response.body.on("close", () => {
       if (!res.headersSent) {
         res.status(500).json({ error: "Falha ao processar o áudio." });
       }
     });
   } catch (error: any) {
-    // Verifique se a resposta não foi enviada antes de enviar um erro
     if (!res.headersSent) {
-      res.status(500).json({ error: error.message });
+      res
+        .status(500)
+        .json({ error: "Erro no generate audio", message: error.message });
     }
   }
 }

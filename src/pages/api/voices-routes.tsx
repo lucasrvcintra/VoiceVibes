@@ -10,8 +10,6 @@ export default async function handler(
     if (!apiKey) {
       throw new Error("Chave de API não encontrada");
     }
-    console.log("🚀 ~ apiKey:", apiKey);
-
     const url = "https://api.elevenlabs.io/v1/voices";
 
     const response = await fetch(url, {
