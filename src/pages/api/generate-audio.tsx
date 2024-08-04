@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
+import {} from "@vercel/blob";
 
 export default async function handler(
   req: NextApiRequest,
