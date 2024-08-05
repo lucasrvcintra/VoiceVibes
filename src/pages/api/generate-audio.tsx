@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
-import {} from "@vercel/blob";
 
 export default async function handler(
   req: NextApiRequest,
@@ -66,7 +65,9 @@ export default async function handler(
     });
 
     fileStream.on("error", (err) => {
-      throw new Error(`Falha ao salvar o áudio: ${err.message}`);
+      res
+        .status(500)
+        .json({ error: `Falha ao salvar o áudio: ${err.message}` });
     });
 
     response.body.on("close", () => {

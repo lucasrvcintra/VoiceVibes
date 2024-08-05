@@ -1,43 +1,33 @@
 import React, { useState } from "react";
-import {
-  Button,
-  TextInput,
-  Menu,
-  Group,
-  Text,
-  Notification,
-} from "@mantine/core";
-import { VoiceListProps } from "@/interfaces/definitions";
-
-interface GenerateAudioFormProps {
-  voices: VoiceListProps["voices"];
-  onGenerateAudio: (voiceId: string, textToSpeak: string) => void;
-}
+import { Button, TextInput, Menu, Group, Notification } from "@mantine/core";
+import { GenerateAudioFormProps } from "@/interfaces/definitions";
 
 const GenerateAudioForm: React.FC<GenerateAudioFormProps> = ({
   voices,
   onGenerateAudio,
+  voiceButtonText,
+  setVoiceButtonText,
 }) => {
   const [text, setText] = useState<string>("");
   const [notification, setNotification] = useState<string | null>(null);
+  const [voiceId, setVoiceId] = useState<string | null>(null);
 
   const handleGenerateAudio = () => {
-    if (!voiceButtonText || !text) {
+    if (!voiceId || !text) {
       setNotification("Por favor, selecione uma voz e digite o texto.");
       return;
     }
 
-    onGenerateAudio(voiceButtonText, text);
+    console.log("Enviando ao backend:", { voiceId, text });
+    onGenerateAudio(voiceId, text);
     setNotification(null);
   };
 
-  const handleVoiceSelect = (voiceId: string, voiceName: string) => {
-    setVoiceButtonText(voiceId);
-    // Atualiza o texto do botão
-    setVoiceButtonText(voiceName);
+  const handleVoiceSelect = (id: string, name: string) => {
+    console.log("Selecionando voz:", { id, name });
+    setVoiceId(id);
+    setVoiceButtonText(name);
   };
-
-  const [voiceButtonText, setVoiceButtonText] = useState("Selecione uma voz");
 
   return (
     <div>
@@ -52,20 +42,23 @@ const GenerateAudioForm: React.FC<GenerateAudioFormProps> = ({
         value={text}
         onChange={(e) => setText(e.target.value)}
         required
+        my="md"
       />
       <Menu>
         <Menu.Target>
           <Button variant="outline">{voiceButtonText}</Button>
         </Menu.Target>
         <Menu.Dropdown>
-          {voices.map((voice) => (
-            <Menu.Item
-              key={voice.id}
-              onClick={() => handleVoiceSelect(voice.id, voice.name)}
-            >
-              {voice.name}
-            </Menu.Item>
-          ))}
+          {voices.map((voice) => {
+            return (
+              <Menu.Item
+                key={voice.voice_id}
+                onClick={() => handleVoiceSelect(voice.voice_id, voice.name)}
+              >
+                {voice.name}
+              </Menu.Item>
+            );
+          })}
         </Menu.Dropdown>
       </Menu>
       <Group mt="md">

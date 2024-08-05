@@ -6,7 +6,14 @@ const VoiceList = ({ voices }: VoiceListProps) => {
   return (
     <div>
       {voices.map((voice) => (
-        <Card key={voice.id} shadow="sm" padding="lg" radius="md" withBorder>
+        <Card
+          key={voice.id}
+          shadow="sm"
+          padding="lg"
+          my="md"
+          radius="md"
+          withBorder
+        >
           <Text>{voice.name}</Text>
           <Text size="sm" color="dimmed">
             Category: {voice.category}

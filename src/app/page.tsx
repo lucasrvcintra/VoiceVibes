@@ -3,13 +3,17 @@
 import React, { useEffect, useState } from "react";
 import VoiceList from "../components/voice-list";
 import GenerateAudioForm from "../components/generate-audio-form";
-import { Container, Loader, Notification, Text } from "@mantine/core";
+import { Card, Container, Loader, Notification, Text } from "@mantine/core";
+import type { Voice } from "@/interfaces/definitions";
 
 export default function HomePage() {
-  const [voices, setVoices] = useState<any[]>([]);
+  const [voices, setVoices] = useState<Voice[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
+  const [voiceButtonText, setVoiceButtonText] =
+    useState<string>("Selecione uma voz");
 
   useEffect(() => {
     const fetchVoices = async () => {
@@ -28,6 +32,7 @@ export default function HomePage() {
   }, []);
 
   const onGenerateAudio = async (voiceId: string, textToSpeak: string) => {
+    console.log("Gerar áudio com:", { voiceId, textToSpeak });
     try {
       const response = await fetch("/api/generate-audio", {
         method: "POST",
@@ -39,6 +44,7 @@ export default function HomePage() {
       if (!response.ok) throw new Error("Failed to generate audio");
 
       const data = await response.json();
+      console.log("Resposta do backend:", data);
       setAudioUrl(data.url);
     } catch (error: any) {
       setError(error.message);
@@ -46,8 +52,10 @@ export default function HomePage() {
   };
 
   return (
-    <Container className="my-8">
-      <Text className="text-2xl font-bold mb-4">Voices List</Text>
+    <Container my="md">
+      <div className="border-red-600 font-bold text-center">
+        <p className="text-2xl font-bold mb-4">Voices List</p>
+      </div>
       {loading && <Loader size="lg" />}
       {error && (
         <Notification color="red" title="Error">
@@ -63,7 +71,19 @@ export default function HomePage() {
           loading={false}
         />
       )}
-      <GenerateAudioForm voices={voices} onGenerateAudio={onGenerateAudio} />
+      <GenerateAudioForm
+        voices={voices}
+        onGenerateAudio={onGenerateAudio}
+        voiceButtonText={voiceButtonText}
+        setVoiceButtonText={setVoiceButtonText}
+      />
+
+      {audioUrl && (
+        <Card shadow="sm" padding="lg" radius="md" withBorder my="md">
+          <Text my="sm">Áudio gerado com a voz de {voiceButtonText}</Text>
+          <audio controls src={audioUrl} />
+        </Card>
+      )}
     </Container>
   );
 }
