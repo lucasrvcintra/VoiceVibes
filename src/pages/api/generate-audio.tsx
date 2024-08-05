@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import fs from "fs";
-import path from "path";
 import fetch from "node-fetch";
+import { put } from "@vercel/blob";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,6 +8,7 @@ export default async function handler(
 ) {
   try {
     const apiKey = process.env.ELEVENLABS_API_KEY;
+    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
     const { voiceId, textToSpeak } = req.body;
 
     if (!apiKey) {
@@ -53,28 +53,27 @@ export default async function handler(
       throw new Error("Resposta do corpo está vazia.");
     }
 
-    const outputPath = path.join(process.cwd(), "public", "output.mp3");
-    const fileStream = fs.createWriteStream(outputPath);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64Audio = buffer.toString("base64");
 
-    response.body.pipe(fileStream);
-
-    fileStream.on("finish", () => {
-      res
-        .status(200)
-        .json({ message: "Áudio salvo com sucesso", url: "/output.mp3" });
+    // Upload do áudio para o Vercel Blob Storage
+    const result = await put("teste", base64Audio, {
+      access: "public",
+      contentType: "audio/mpeg",
+      token: blobToken,
     });
+    console.log("🚀 ~ result:", result);
 
-    fileStream.on("error", (err) => {
-      res
-        .status(500)
-        .json({ error: `Falha ao salvar o áudio: ${err.message}` });
-    });
+    if (!result.url) {
+      throw new Error(
+        "Falha ao fazer upload do áudio para o Vercel Blob Storage"
+      );
+    }
 
-    response.body.on("close", () => {
-      if (!res.headersSent) {
-        res.status(500).json({ error: "Falha ao processar o áudio." });
-      }
-    });
+    const audioUrl = result.url;
+
+    res.status(200).json({ message: "Áudio salvo com sucesso", url: audioUrl });
   } catch (error: any) {
     if (!res.headersSent) {
       res
