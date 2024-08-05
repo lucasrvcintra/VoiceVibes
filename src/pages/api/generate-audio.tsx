@@ -60,7 +60,7 @@ export default async function handler(
     // Upload do áudio para o Vercel Blob Storage
     const result = await put("teste", base64Audio, {
       access: "public",
-      contentType: "audio/mpeg",
+
       token: blobToken,
     });
     console.log("🚀 ~ result:", result);
