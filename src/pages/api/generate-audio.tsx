@@ -53,17 +53,14 @@ export default async function handler(
       throw new Error("Resposta do corpo está vazia.");
     }
 
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64Audio = buffer.toString("base64");
+    const file = response.blob();
 
     // Upload do áudio para o Vercel Blob Storage
-    const result = await put("teste", base64Audio, {
+    const result = await put("audio.mp3", await file, {
       access: "public",
 
       token: blobToken,
     });
-    console.log("🚀 ~ result:", result);
 
     if (!result.url) {
       throw new Error(
