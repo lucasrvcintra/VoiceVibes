@@ -53,6 +53,19 @@ export default function HomePage() {
 
   return (
     <Container my="md">
+      <GenerateAudioForm
+        voices={voices}
+        onGenerateAudio={onGenerateAudio}
+        voiceButtonText={voiceButtonText}
+        setVoiceButtonText={setVoiceButtonText}
+      />
+
+      {audioUrl && (
+        <Card shadow="sm" padding="lg" radius="md" withBorder my="md">
+          <Text my="sm">Áudio gerado com a voz de {voiceButtonText}</Text>
+          <audio controls src={audioUrl} />
+        </Card>
+      )}
       <div className="border-red-600 font-bold text-center">
         <p className="text-2xl font-bold mb-4">Voices List</p>
       </div>
@@ -70,19 +83,6 @@ export default function HomePage() {
           }}
           loading={false}
         />
-      )}
-      <GenerateAudioForm
-        voices={voices}
-        onGenerateAudio={onGenerateAudio}
-        voiceButtonText={voiceButtonText}
-        setVoiceButtonText={setVoiceButtonText}
-      />
-
-      {audioUrl && (
-        <Card shadow="sm" padding="lg" radius="md" withBorder my="md">
-          <Text my="sm">Áudio gerado com a voz de {voiceButtonText}</Text>
-          <audio controls src={audioUrl} />
-        </Card>
       )}
     </Container>
   );
